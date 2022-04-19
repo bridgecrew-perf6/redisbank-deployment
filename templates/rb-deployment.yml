@@ -59,17 +59,17 @@ spec:
             - name: REDIS_BANK_USERNAME
                 valueFrom:
                   secretKeyRef:
-                    name: { { .Values.redis.banking.app.name } }-auth
+                    name: {{ .Values.redis.banking.app.name }}-auth
                     key: username
             - name: REDIS_BANK_PWD
                 valueFrom:
                   secretKeyRef:
-                    name: { { .Values.redis.banking.app.name } }-auth
+                    name: {{ .Values.redis.banking.app.name }}-auth
                     key: password
             - name: REDIS_BANK_ROLES
                 valueFrom:
                   secretKeyRef:
-                    name: { { .Values.redis.banking.app.name } }-auth
+                    name: {{ .Values.redis.banking.app.name }}-auth
                     key: roles
           securityContext:
             privileged: false

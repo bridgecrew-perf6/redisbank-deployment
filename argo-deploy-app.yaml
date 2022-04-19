@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: redisbank-deployment
+  namespace: openshift-gitops
+spec:
+  destination:
+    namespace: redis-apps
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: .
+    repoURL: 'https://github.com/redis-projects/redisbank-deployment'
+    targetRevision: master
+  project: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
