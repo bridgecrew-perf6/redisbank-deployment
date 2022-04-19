@@ -14,5 +14,5 @@ spec: {{ if .Values.redis.banking.app.db.modules }}
   shardCount: {{ default 1 .Values.redis.banking.app.db.shardCount }}
   shardsPlacement: {{ default "dense" .Values.redis.banking.app.db.shardsPlacement }}
   databasePort: {{ default 12000 .Values.redis.banking.app.db.databasePort }}
-  databaseSecretName: {{ .Values.redis.banking.app.name }}-auth
+  databaseSecretName: {{ .Values.redis.banking.app.name }}-db-auth
   memorySize: {{ default "5GB" .Values.redis.banking.app.db.memorySize }}
