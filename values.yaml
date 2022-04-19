@@ -1,0 +1,51 @@
+redis:
+  banking:
+    app:
+      name: redisbank
+      namespace: redis-apps
+      deployment:
+        replicas: 1
+        useDC: false # Use OCP DeploymentConfig or K8s Deployment
+      secret:
+        # obviously these should be sourced from vault or SealedSecrets
+        db:
+          name: redisbank-db-auth
+          password: redisbank
+        user:
+          username: lars
+          password: password123!
+          roles: USER
+      service:
+        ports:
+          - name: http
+            port: 8080
+            protocol: TCP
+            targetPort: 8080
+      route:
+        targetPort: 8080
+      db:
+        name: band-db
+        clusterName: rec
+        shardCount: 2
+        shardsPlacement: dense
+        databasePort: 12869
+        databaseSecretName: bankdb-pwd
+        memorySize: 1GB
+        modules:
+          - name: search
+            version: 2.2.6
+          - name: timeseries
+            version: 1.4.13
+      spring:
+        profile: openshift
+      stomp:
+        port: 80
+        protocol: ws
+      labels:
+        app: redisbank
+        version: 0.0.1-SNAPSHOT
+        group: com.redislabs.demos
+      annotations:
+        redis.io/git-branch: main
+        redis.io/scm-url: https://github.com/spring-projects/spring-boot/redisbank
+        redis.io/git-url: https://github.com/Redislabs-Solution-Architects/redisbank.git

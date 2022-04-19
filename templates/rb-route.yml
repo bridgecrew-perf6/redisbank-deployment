@@ -1,0 +1,15 @@
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  annotations:
+{{ toYaml .Values.redis.banking.app.annotations | indent 4 }}
+  labels:
+{{ toYaml .Values.redis.banking.app.labels | indent 4 }}
+  name: {{ .Values.redis.banking.app.name }}-route
+spec:
+  port:
+    targetPort: {{ .Values.redis.banking.app.route.targetPort }}
+  to:
+    kind: Service
+    name: {{ .Release.Name }}-service

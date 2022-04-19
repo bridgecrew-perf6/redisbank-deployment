@@ -1,0 +1,68 @@
+{{- if .Values.redis.banking.app.deployment.useDC }}
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  annotations:
+{{ toYaml .Values.redis.banking.app.annotations | indent 4 }}
+  labels:
+{{ toYaml .Values.redis.banking.app.labels | indent 4 }}
+  name: redisbank
+spec:
+  replicas: {{ default 1 .Values.redis.banking.app.deployment.replicas }}
+  selector:
+    app: {{ .Values.redis.banking.app.labels.app }}
+    group: {{ .Values.redis.banking.app.labels.group }}
+  strategy:
+    rollingParams:
+      timeoutSeconds: 3600
+    type: Rolling
+  template:
+    metadata:
+      annotations:
+{{ toYaml .Values.redis.banking.app.annotations | indent 8 }}
+      labels:
+{{ toYaml .Values.redis.banking.app.labels | indent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: redis-apps
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: >-
+          image-registry.openshift-image-registry.svc:5000/devops/redisbank:latest
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /actuator/health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 180
+          successThreshold: 1
+        name: redis-apps-redisbank
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /actuator/health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          successThreshold: 1
+        securityContext:
+          privileged: false
+  triggers:
+  - type: ConfigChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - redis-apps-redisbank
+      from:
+        kind: ImageStreamTag
+        name: redisbank:latest
+    type: ImageChange
+{{- end }}
